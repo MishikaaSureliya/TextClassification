@@ -1,0 +1,79 @@
+﻿@{
+    ViewData["Title"] = "Register";
+}
+
+<link rel="stylesheet" href="~/css/style.css" />
+
+<div class="auth-container">
+    <h2>📝 Register</h2>
+
+    <input type="text" id="name" placeholder="Name" />
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+
+    <button onclick="register()">Register</button>
+
+    <div class="error" id="error"></div>
+    <div class="success" id="success"></div>
+
+    <div class="auth-link">
+        Already have an account?
+        <a href="/Auth/Login">Login</a>
+    </div>
+</div>
+
+<script>
+    async function register() {
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+
+        const error = document.getElementById("error");
+        const success = document.getElementById("success");
+
+        error.innerText = "";
+        success.innerText = "";
+
+        // 🔥 Validation
+        if (!/^[A-Za-z]+$/.test(name)) {
+            error.innerText = "Name must contain only characters";
+            return;
+        }
+
+        if (!email.includes("@@")) {  // ✅ FIXED
+            error.innerText = "Invalid email";
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            error.innerText = "Passwords do not match";
+            return;
+        }
+
+        if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password)) {
+            error.innerText = "Password must have 8 chars, 1 capital, 1 number, 1 special char";
+            return;
+        }
+
+        const res = await fetch("/api/authapi/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password, confirmPassword })
+        });
+
+        const data = await res.text();
+
+        if (!res.ok) {
+            error.innerText = data;
+            return;
+        }
+
+        success.innerText = "Registered successfully!";
+
+        setTimeout(() => {
+            window.location.href = "/Auth/Login";
+        }, 1500);
+    }
+</script>

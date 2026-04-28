@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<link rel="stylesheet" href="~/css/style.css" />
+
+<div class="auth-container">
+    <h2>🔐 Login</h2>
+
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+
+    <button onclick="login()">Login</button>
+
+    <div class="error" id="error"></div>
+
+    <div class="auth-link">
+        Don't have an account?
+        <a href="/Auth/Register">Register</a>
+    </div>
+</div>
+
+<script>
+    async function login() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        const res = await fetch("/api/authapi/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            document.getElementById("error").innerText = data;
+            return;
+        }
+
+        // 🔥 Save JWT
+        localStorage.setItem("token", data.token);
+
+        // Redirect to main page
+        window.location.href = "/Home/Index";
+    }
+</script>

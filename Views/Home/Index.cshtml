@@ -1,0 +1,90 @@
+﻿@{
+    ViewData["Title"] = "Sentiment Analysis";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Sentiment Analysis</title>
+    <link rel="stylesheet" href="~/css/style.css" />
+</head>
+<body>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+    <div class="container">
+        <h1>💬 Sentiment Analyzer</h1>
+
+        <textarea id="textInput" placeholder="Enter your text..."></textarea>
+      
+        <button onclick="predictSentiment()">Analyze</button>
+
+        <div id="result" class="result-box"></div>
+    </div>
+
+    <script>
+            async function predictSentiment() {
+                const text = document.getElementById("textInput").value;
+
+                if (!text) {
+                    alert("Please enter text");
+                    return;
+                }
+
+                const response = await fetch("/api/sentiment/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("token")
+                    },
+                    body: JSON.stringify(text)
+                });
+
+                const data = await response.json();
+
+                document.getElementById("result").innerHTML =
+                    `<p><b>Text:</b> ${data.text}</p>
+                     <p><b>Prediction:</b> ${data.prediction}</p>
+                     <p><b>Probability:</b> ${data.probability.toFixed(2)}</p>`;
+            }
+
+    </script>
+    <script>
+            function logout() {
+                localStorage.removeItem("token");
+                window.location.href = "/Auth/Login";
+            }
+
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                window.location.href = "/Auth/Login";
+            }
+
+            async function predictSentiment() {
+                const text = document.getElementById("textInput").value;
+
+                if (!text) {
+                    alert("Please enter text");
+                    return;
+                }
+
+                const response = await fetch("/api/sentiment/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify(text)
+                });
+
+                const data = await response.json();
+
+                document.getElementById("result").innerHTML =
+                    `<p><b>Text:</b> ${data.text}</p>
+                     <p><b>Prediction:</b> ${data.prediction}</p>
+                     <p><b>Probability:</b> ${data.probability.toFixed(2)}</p>`;
+            }
+    </script>
+
+</body>
+</html>

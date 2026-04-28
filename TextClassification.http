@@ -1,0 +1,6 @@
+@TextClassification_HostAddress = http://localhost:5150
+
+GET {{TextClassification_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
